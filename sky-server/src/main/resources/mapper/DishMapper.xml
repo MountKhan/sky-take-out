@@ -8,4 +8,24 @@
         insert into dish (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values (#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
+
+    <!--    dishes query-->
+    <select id="dishPaginationQuery" resultType="com.sky.vo.DishVO">
+        select d.*,
+        c.name categoryName
+        from dish d left join category c on d.category_id=c.id
+        <where>
+            <if test="name != null">
+                and d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by d.create_time desc
+    </select>
+
 </mapper>
