@@ -61,7 +61,7 @@ public class CategoryController {
     }
 
     /**
-     * 根据id分类信息/ update category attributes by id
+     * 根据id修改分类信息/ update category attributes by id
      */
     @ApiOperation(value = "修改分类")
     @PutMapping
@@ -83,7 +83,8 @@ public class CategoryController {
     }
 
     /**
-     * 根据类型查询分类/query category by type
+     * 根据类型查询分类
+     * query category by type
      */
     @ApiOperation(value = "根据类型查询分类")
     @GetMapping("/list")

@@ -7,6 +7,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.service.impl.DishServiceImpl;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
@@ -64,5 +65,53 @@ public class DishController {
         log.info("删除菜品，{}", Arrays.toString(ids));
         dishService.deleteByIds(ids);
         return Result.success();
+    }
+
+    /**
+     * 根据id查询菜品
+     * query dish by id
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据id查询菜品")
+    public Result<DishVO> selectDishById(@PathVariable Long id){
+        log.info("根据id查询菜品，{}",id);
+        DishVO dishVO = dishService.selectByIdWithFlavor(id);
+        return Result.success(dishVO);
+    }
+
+    /**
+     * 修改菜品
+     * modify(update) dish
+     */
+    @PutMapping
+    @ApiOperation(value = "修改菜品")
+    public Result updateDish(@RequestBody DishDTO dishDTO){
+        log.info("修改菜品，{}",dishDTO);
+        dishService.updateDishWithFlavor(dishDTO);
+        return Result.success();
+    }
+
+    /**
+     * 调整菜品的起售/停售状态
+     * Adjust the able/enable status of dishes
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation(value = "调整菜品的起售/停售状态")
+    public Result changeDishSaleStatus(@PathVariable Integer status,Long id){
+        log.info("根据id更改菜品的起售，停售状态");
+        dishService.changeDishSaleStatus(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 根据分类id查找菜品
+     * query dishes by category id
+     */
+    @GetMapping("/list")
+    @ApiOperation(value = "根据分类id查找菜品")
+    public Result<List<Dish>> selectByCategoryId(Long categoryId){
+        log.info("根据分类id查找菜品,{}",categoryId);
+        List<Dish> list = dishService.selectByCategoryId(categoryId);
+        return Result.success(list);
     }
 }
