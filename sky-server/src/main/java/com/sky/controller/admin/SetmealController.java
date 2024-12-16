@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +30,7 @@ public class SetmealController {
      * 新增套餐
      * add setmeal
      */
+    @CacheEvict(cacheNames = "setmealCache",key = "#setmealDTO.categoryId")
     @PostMapping
     @ApiOperation(value = "新增套餐")
     public Result addSetmeal(@RequestBody SetmealDTO setmealDTO){
@@ -65,6 +67,7 @@ public class SetmealController {
      * 修改套餐
      * update setmeal
      */
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     @PutMapping
     @ApiOperation(value = "修改套餐")
     public Result update(@RequestBody SetmealDTO setmealDTO){
@@ -77,6 +80,7 @@ public class SetmealController {
      * 批量删除套餐
      * delete setmeal in batches
      */
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     @DeleteMapping
     @ApiOperation("批量删除套餐")
     public Result deleteInBatches(Long[] ids){
@@ -89,6 +93,7 @@ public class SetmealController {
      * 套餐的起售/停售
      * able/enable setmeal
      */
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     @PostMapping("/status/{status}")
     @ApiOperation(value = "套餐的起售/停售")
     public Result startOrStop(@PathVariable Integer status,Long id){
