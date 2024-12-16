@@ -125,5 +125,14 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.queryCategoryByType(type);
     }
 
+    /**
+     * 根据类型查询分类 1为菜品分类 2为套餐分类
+     * Query category 1 for dishes and 2 for set meals according to type
+     */
+    @Override
+    public List<Category> list(Integer type) {
+        return categoryMapper.selectByType(type);
+    }
+
 
 }

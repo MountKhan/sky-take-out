@@ -50,4 +50,10 @@ public interface DishService {
      * query dishes by category id
      */
     List<Dish> selectByCategoryId(Long categoryId);
+
+    /**
+     * 根据分类id查询菜品（包含口味）
+     * Search dishes by category id (including flavors)
+     */
+    List<DishVO> listWithFlavor(Dish dish);
 }

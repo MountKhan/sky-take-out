@@ -43,4 +43,10 @@ public interface CategoryService {
      * 根据类型查询分类/query category by type
      */
     List<Category> queryCategoryByType(Integer type);
+
+    /**
+     * 根据类型查询分类 1为菜品分类 2为套餐分类
+     * Query category 1 for dishes and 2 for set meals according to type
+     */
+    List<Category> list(Integer type);
 }
