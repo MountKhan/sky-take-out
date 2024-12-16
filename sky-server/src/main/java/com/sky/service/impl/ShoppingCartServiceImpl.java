@@ -1,10 +1,13 @@
 package com.sky.service.impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.ShoppingCart;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
@@ -97,5 +100,51 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUserId(userId);
         return shoppingCartMapper.list(shoppingCart);
+    }
+
+    /**
+     * 清空购物车
+     * Clear the shopping cart
+     */
+    @Override
+    public void clean() {
+        //获取当前用户id
+        //get userId
+        Long userId = BaseContext.getCurrentId();
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUserId(userId);
+
+        //避免shoppingCart的所有属性都为空时删除数据库
+        //To avoid deleting the database when all properties of the `shoppingCart` object are empty.
+        if(shoppingCart.getDishId() == null &&
+                shoppingCart.getSetmealId() == null &&
+                shoppingCart.getDishFlavor() == null &&
+                shoppingCart.getUserId() == null) {
+            throw new DeletionNotAllowedException(MessageConstant.INVALID_SHOPPING_CART_DELETION);
+        }
+
+        shoppingCartMapper.delete(shoppingCart);
+    }
+
+    /**
+     * 删除购物车中指定的的一个商品
+     * remove a specific item from shopping cart
+     */
+    @Override
+    public void remove(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+
+        //避免shoppingCart的所有属性都为空时删除数据库
+        //To avoid deleting the database when all properties of the `shoppingCart` object are empty.
+        if(shoppingCart.getDishId() == null &&
+                shoppingCart.getSetmealId() == null &&
+                shoppingCart.getDishFlavor() == null &&
+                shoppingCart.getUserId() == null) {
+            throw new DeletionNotAllowedException(MessageConstant.INVALID_SHOPPING_CART_DELETION);
+        }
+
+        shoppingCartMapper.delete(shoppingCart);
     }
 }
