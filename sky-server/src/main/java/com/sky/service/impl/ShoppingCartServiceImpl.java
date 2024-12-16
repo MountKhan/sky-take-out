@@ -136,15 +136,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         shoppingCart.setUserId(BaseContext.getCurrentId());
 
-        //避免shoppingCart的所有属性都为空时删除数据库
-        //To avoid deleting the database when all properties of the `shoppingCart` object are empty.
-        if(shoppingCart.getDishId() == null &&
-                shoppingCart.getSetmealId() == null &&
-                shoppingCart.getDishFlavor() == null &&
-                shoppingCart.getUserId() == null) {
-            throw new DeletionNotAllowedException(MessageConstant.INVALID_SHOPPING_CART_DELETION);
+
+        //查询购物车内这个商品的数量
+        //Check the quantity of this item in the shopping cart.
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        if(list != null && !list.isEmpty()){
+            shoppingCart = list.get(0);
+
+            Integer number = shoppingCart.getNumber();
+
+            //数量为1->删除
+            //number == 1 --> delete
+            if(number == 1){
+                shoppingCartMapper.delete(shoppingCart);
+            } else {
+                //数量大于1->数量减一
+                //number > 1 --> number - 1
+                shoppingCart.setNumber(number-1);
+                shoppingCartMapper.updateNumberById(shoppingCart);
+            }
         }
 
-        shoppingCartMapper.delete(shoppingCart);
+
     }
 }
