@@ -41,4 +41,10 @@ public interface ShoppingCartMapper {
      * remove specific item from shopping cart
      */
     void delete(ShoppingCart shoppingCart);
+
+    /**
+     * 批量插入购物车
+     * insert items into shopping cart in batches
+     */
+    void insertInBatches(List<ShoppingCart> shoppingCartList);
 }

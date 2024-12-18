@@ -2,7 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.ShoppingCartMapper">
-<!--    delete item from shopping cart-->
+
+<!--    insert in batches-->
+    <insert id="insertInBatches">
+        insert into shopping_cart
+            (name, image, user_id, dish_id, setmeal_id, dish_flavor, number, amount, create_time) 
+        values 
+            <foreach collection="shoppingCartList" item="shoppingCart" separator=",">
+                (#{shoppingCart.name},#{shoppingCart.image},#{shoppingCart.userId},
+                 #{shoppingCart.dishId},#{shoppingCart.setmealId},#{shoppingCart.dishFlavor},
+                 #{shoppingCart.number},#{shoppingCart.amount},#{shoppingCart.createTime})
+            </foreach>
+    </insert>
+
+    <!--    delete item from shopping cart-->
     <delete id="delete">
         delete from shopping_cart
         <where>
