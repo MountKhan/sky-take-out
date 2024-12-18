@@ -1,5 +1,8 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -20,12 +23,15 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.utils.HttpClientUtil;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -33,13 +39,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -54,6 +59,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
+
+    @Value("${sky.shop.address}")
+    private String shopAddress;
+
+    @Value("${sky.baidu.ak}")
+    private String ak;
 
     /**
      * 用户下单
@@ -79,6 +90,11 @@ public class OrderServiceImpl implements OrderService {
         if(list == null || list.isEmpty()){
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+
+        //用户地点是否超出配送距离？
+        //Whether the user's location exceed the delivery distance?
+        String userAddress = addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
+        judgeDistance(userAddress);
 
         //向订单表插入1条数据
         //insert into orders schema (1 item)
@@ -456,6 +472,107 @@ public class OrderServiceImpl implements OrderService {
 
         return String.join("",orderDishList);
     }
+
+    /**
+     * 检查用户收货地址是否超过配送距离（配送距离5公里）
+     * Check whether the user's delivery address exceeds the delivery distance (5 kilometers).
+     */
+    public void judgeDistance(String userAddress){
+        HashMap<String,String> shopMap = new HashMap();
+        shopMap.put("address",shopAddress);
+        shopMap.put("output","json");
+        shopMap.put("ak",ak);
+        //获取店铺的经纬度坐标
+        //Get the shop's latitude and longitude coordinates.
+        String shopCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", shopMap);
+        JSONObject shopJsonObject = JSON.parseObject(shopCoordinate);
+        if(!shopJsonObject.getString("status").equals("0")){
+            throw new OrderBusinessException("店铺位置信息解析失败/Parsing of shop location information failed");
+        }
+
+        JSONObject shopLocation = shopJsonObject.getJSONObject("result").getJSONObject("location");
+        String shopLatitude = formatLongitude(shopLocation.getString("lat"));
+        String shopLongitude = formatLongitude(shopLocation.getString("lng"));
+        String shopLatLong = shopLatitude + "," + shopLongitude;
+
+
+        HashMap<String,String> userMap = new HashMap<>();
+        userMap.put("address",userAddress);
+        userMap.put("output","json");
+        userMap.put("ak",ak);
+        //获取客户的经纬度坐标
+        //Get the customer's latitude and longitude coordinates.
+        String userCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", userMap);
+        JSONObject userJsonObject = JSON.parseObject(userCoordinate);
+        if(!userJsonObject.getString("status").equals("0")){
+            throw new OrderBusinessException("用户位置信息解析失败/Parsing of user location information failed");
+        }
+        JSONObject userLocation = userJsonObject.getJSONObject("result").getJSONObject("location");
+        String userLatitude = formatLongitude(userLocation.getString("lat"));
+        String userLongitude = formatLongitude(userLocation.getString("lng"));
+        String userLatLong = userLatitude + "," + userLongitude;
+
+        //判断是否超出距离
+        //Check if the delivery address is beyond the delivery range.
+        HashMap<String,String> judgeDistance = new HashMap<>();
+        judgeDistance.put("origin",shopLatLong);
+        judgeDistance.put("destination",userLatLong);
+        judgeDistance.put("ak",ak);
+        String distanceJson = HttpClientUtil.doGet("https://api.map.baidu.com/directionlite/v1/walking", judgeDistance);
+        JSONObject distanceObject = JSON.parseObject(distanceJson);
+        if(!distanceObject.getString("status").equals("0")){
+            throw new OrderBusinessException("距离估算失败/distance estimation failure");
+        }
+
+
+        JSONObject result = distanceObject.getJSONObject("result");
+        JSONArray routes = result.getJSONArray("routes");
+        Integer distance = (Integer)((JSONObject)routes.get(0)).get("distance");
+        log.info("距离为：{}米",distance);
+        if(distance > 5000){
+            throw new OrderBusinessException("超出配送范围/distance too far!");
+        }
+
+    }
+
+    /**
+     * 将输入的经纬度字符串保留6位小数，并舍去后面的部分
+     * This method retains 6 decimal places for the input longitude string and truncates the rest.
+     */
+    public static String formatLongitude(String latLong) {
+        // 将字符串转换为BigDecimal类型，保证精度
+        // Convert the string to BigDecimal to ensure precision
+        BigDecimal res = new BigDecimal(latLong);
+
+        // 保留6位小数，并舍去后面的部分
+        // Retain 6 decimal places and truncate the remaining part
+        res = res.setScale(6, BigDecimal.ROUND_DOWN);
+
+        // 返回格式化后的字符串
+        // Return the formatted string
+        return res.toString();
+    }
+//    public static String formatLongitude(String latLong) {
+//        // 检查输入是否为 null 或空字符串，避免空指针异常
+//        // Check if the input is null or an empty string to avoid NullPointerException
+//        if (latLong == null || latLong.isEmpty()) {
+//            throw new IllegalArgumentException("Input cannot be null or empty");
+//        }
+//
+//        // 找到小数点的位置
+//        // Find the position of the decimal point
+//        int dotIndex = latLong.indexOf(".");
+//
+//        // 如果没有小数点，或者小数点后不足6位，直接返回原始字符串
+//        // If there is no decimal point or the number of digits after the decimal is less than 6, return the original string
+//        if (dotIndex == -1 || dotIndex + 6 >= latLong.length()) {
+//            return latLong;
+//        }
+//
+//        // 截取小数点后6位
+//        // Extract up to 6 digits after the decimal point
+//        return latLong.substring(0, dotIndex + 7);
+//    }
 
 //    /**
 //     * 更改订单状态
