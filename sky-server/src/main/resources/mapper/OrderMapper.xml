@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.OrderMapper">
+
 <!--    insert order-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into orders
@@ -85,5 +86,34 @@
         </where>
         order by order_time desc
     </select>
+
+<!--    Calculate the total revenue based on the start date, end date, and order status.-->
+    <select id="sumByMap" resultType="java.lang.Double">
+        select ifnull(sum(amount),0) from orders
+        <where>
+            <if test="begin != null">
+                and order_time &gt;= #{begin}
+            </if>
+
+            <if test="end != null">
+                and order_time &lt;= #{end}
+            </if>
+
+            <if test="status != null">
+                and status = #{status}
+            </if>
+
+        </where>
+    </select>
+
+
+
+    <select id="sumByDate" resultType="java.util.Map">
+        select date(order_time) as orderTime, sum(amount) sum
+        from orders
+        where date(order_time) between #{begin} and #{end}
+        group by date(order_time);
+    </select>
+
 
 </mapper>

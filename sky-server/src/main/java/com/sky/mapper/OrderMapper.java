@@ -3,12 +3,14 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Mapper
 public interface OrderMapper {
@@ -53,6 +55,18 @@ public interface OrderMapper {
      */
     @Select("select * from orders where status = #{status} and order_time < #{time}")
     List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime time);
+
+    /**
+     * 根据开始日期，结束日期，订单状态 统计营业额
+     * Calculate the total revenue based on the start date, end date, and order status.
+     */
+    Double sumByMap(Map map);
+
+    /**
+     * //TODO
+     */
+    @MapKey("orderTime")
+    Map<String, String> sumByDate(LocalDate begin, LocalDate end, Integer status);
 
 
 //    /**
