@@ -552,35 +552,5 @@ public class OrderServiceImpl implements OrderService {
         // Return the formatted string
         return res.toString();
     }
-//    public static String formatLongitude(String latLong) {
-//        // 检查输入是否为 null 或空字符串，避免空指针异常
-//        // Check if the input is null or an empty string to avoid NullPointerException
-//        if (latLong == null || latLong.isEmpty()) {
-//            throw new IllegalArgumentException("Input cannot be null or empty");
-//        }
-//
-//        // 找到小数点的位置
-//        // Find the position of the decimal point
-//        int dotIndex = latLong.indexOf(".");
-//
-//        // 如果没有小数点，或者小数点后不足6位，直接返回原始字符串
-//        // If there is no decimal point or the number of digits after the decimal is less than 6, return the original string
-//        if (dotIndex == -1 || dotIndex + 6 >= latLong.length()) {
-//            return latLong;
-//        }
-//
-//        // 截取小数点后6位
-//        // Extract up to 6 digits after the decimal point
-//        return latLong.substring(0, dotIndex + 7);
-//    }
-
-//    /**
-//     * 更改订单状态
-//     * change order status
-//     */
-//    @Override
-//    public void changeOrderStatus(Orders orders) {
-//        orderMapper.updateStatus(orders);
-//    }
 
 }
