@@ -88,6 +88,12 @@ public interface OrderService {
      */
     void complete(Long id);
 
+    /**
+     * 催单
+     * remind order
+     */
+    void reminder(Long id);
+
 //    /**
 //     * 更改订单状态
 //     * change order status
