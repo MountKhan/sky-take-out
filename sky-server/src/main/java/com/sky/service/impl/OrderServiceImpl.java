@@ -27,6 +27,7 @@ import com.sky.utils.HttpClientUtil;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.webSocket.WebSocketServer;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -65,6 +66,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${sky.baidu.ak}")
     private String ak;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 用户下单
@@ -141,6 +145,15 @@ public class OrderServiceImpl implements OrderService {
         ShoppingCart cart = new ShoppingCart();
         cart.setUserId(userID);
         shoppingCartMapper.delete(cart);
+
+        //给管理端发送新订单通知
+        //notify admin of new order
+        Map map = new HashMap();
+        map.put("type",1);//1 new order motice,2 order reminder
+        map.put("orderId",orders.getId());
+        map.put("content","订单号:"+orders.getNumber());
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
 
         //封装返回数据
         //Encapsulate the return data
