@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.dto.*;
 import com.sky.entity.Orders;
 import com.sky.result.PageResult;
+import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
@@ -93,6 +94,12 @@ public interface OrderService {
      * remind order
      */
     void reminder(Long id);
+
+    /**
+     * 查询订单管理数据
+     * Query orders overview
+     */
+    OrderOverViewVO getOrdersOverview();
 
 //    /**
 //     * 更改订单状态

@@ -24,6 +24,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.utils.HttpClientUtil;
+import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
@@ -466,6 +467,29 @@ public class OrderServiceImpl implements OrderService {
         map.put("content","订单号:"+orders.getNumber());
         String json = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
+    }
+
+    /**
+     * 查询订单管理数据
+     * Query orders overview
+     */
+    @Override
+    public OrderOverViewVO getOrdersOverview() {
+
+        Integer waitingOrders = orderMapper.statusCount(Orders.TO_BE_CONFIRMED);
+        Integer deliveredOrders = orderMapper.statusCount(Orders.CONFIRMED);
+        Integer completedOrders = orderMapper.statusCount(Orders.COMPLETED);
+        Integer cancelledOrders = orderMapper.statusCount(Orders.CANCELLED);
+        Integer allOrders = orderMapper.getOrderCount(new HashMap());
+
+        return OrderOverViewVO
+                .builder()
+                .waitingOrders(waitingOrders)
+                .deliveredOrders(deliveredOrders)
+                .completedOrders(completedOrders)
+                .cancelledOrders(cancelledOrders)
+                .allOrders(allOrders)
+                .build();
     }
 
     /**

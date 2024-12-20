@@ -4,6 +4,7 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.result.PageResult;
+import com.sky.vo.DishOverViewVO;
 import com.sky.vo.DishVO;
 
 import java.util.List;
@@ -56,4 +57,10 @@ public interface DishService {
      * Search dishes by category id (including flavors)
      */
     List<DishVO> listWithFlavor(Dish dish);
+
+    /**
+     * 查询菜品总览
+     * Query dishes overview
+     */
+    DishOverViewVO getDishesOverview();
 }

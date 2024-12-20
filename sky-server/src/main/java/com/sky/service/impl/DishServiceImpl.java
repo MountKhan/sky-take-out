@@ -16,7 +16,9 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
+import com.sky.vo.DishOverViewVO;
 import com.sky.vo.DishVO;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,5 +214,21 @@ public class DishServiceImpl implements DishService {
             dishVOList.add(dishVO);
         }
         return dishVOList;
+    }
+
+    /**
+     * 查询菜品总览
+     * Query dishes overview
+     */
+    @Override
+    public DishOverViewVO getDishesOverview() {
+        Integer sold = dishMapper.countByStatus(StatusConstant.ENABLE);
+        Integer discontinued = dishMapper.countByStatus(StatusConstant.DISABLE);
+
+        return DishOverViewVO
+                .builder()
+                .sold(sold)
+                .discontinued(discontinued)
+                .build();
     }
 }

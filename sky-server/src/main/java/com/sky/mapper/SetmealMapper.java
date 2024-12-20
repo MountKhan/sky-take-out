@@ -70,4 +70,11 @@ public interface SetmealMapper {
      * user:query associated dishes by categoryId
      */
     List<DishItemVO> getDishesBySetmealId(Long id);
+
+    /**
+     * 根据套餐状态计算套餐数量
+     * count set meals by status
+     */
+    @Select("select count(0) from setmeal where status = #{status}")
+    Integer countByStatus(Integer status);
 }
