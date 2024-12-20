@@ -67,6 +67,12 @@ public interface OrderMapper {
     @MapKey("orderTime")
     Map<String, String> sumByDate(LocalDate begin, LocalDate end, Integer status);
 
+    /**
+     * 统计订单数量
+     * order statistics
+     */
+    Integer getOrderCount(Map map);
+
 
 //    /**
 //     * 更改订单状态
