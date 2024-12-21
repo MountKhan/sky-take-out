@@ -33,7 +33,46 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
         LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
 
+        return getBusinessDataByDates(begin,end);
 
+
+//        Map map = new HashMap();
+//        map.put("begin",begin);
+//        map.put("end",end);
+//
+//        //获取今日订单总数
+//        //get today's total number of orders
+//        Integer orderCount = orderMapper.getOrderCount(map);
+//
+//        //获取今日营业额
+//        //get today's turnover
+//        map.put("status", Orders.COMPLETED);
+//        Double turnover = orderMapper.sumByMap(map);
+//
+//
+//        //获取今日有效订单数
+//        //get today's number of valid orders
+//        Integer validOrderCount = orderMapper.getOrderCount(map);
+//
+//        //获取今日新增用户数
+//        //get today's number of new users
+//        Integer newUserCount = userMapper.countByMap(map);
+//
+//        Double orderCompletionRate = (orderCount == 0 ?0 : validOrderCount.doubleValue()/orderCount);
+//
+//        Double unitPrice = (orderCount == 0 ? 0 : turnover/orderCount);
+//
+//        return BusinessDataVO
+//                .builder()
+//                .turnover(turnover)
+//                .validOrderCount(validOrderCount)
+//                .orderCompletionRate(orderCompletionRate)
+//                .unitPrice(unitPrice)
+//                .newUsers(newUserCount)
+//                .build();
+    }
+
+    public BusinessDataVO getBusinessDataByDates(LocalDateTime begin,LocalDateTime end){
         Map map = new HashMap();
         map.put("begin",begin);
         map.put("end",end);
@@ -68,5 +107,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .unitPrice(unitPrice)
                 .newUsers(newUserCount)
                 .build();
+
     }
 }
