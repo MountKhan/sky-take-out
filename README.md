@@ -36,11 +36,13 @@ I have implemented all functionalities in the backend except for the payment fea
 
 3. Configure the `application.yml` file: fill in the port number, database configuration, Redis, OSS, and other information.
 
-4. Download, extract, and start the frontend project: [nginx-1.20.2.zip](https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/nginx-1.20.2.zip)
+4. Configure the database. https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/sky.sql
 
-5. Start the backend project: run `sky-take-out\sky-server\src\main\java\com\sky\SkyApplication.java`.
+5. Download, extract, and start the frontend project: [nginx-1.20.2.zip](https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/nginx-1.20.2.zip)
 
-6. For the user side, please download the official WeChat mini-program development software and import the code: [mp-weixin.zip](https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/mp-weixin.zip)
+6. Start the backend project: run `sky-take-out\sky-server\src\main\java\com\sky\SkyApplication.java`.
+
+7. For the user side, please download the official WeChat mini-program development software and import the code: [mp-weixin.zip](https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/mp-weixin.zip)
 
    WeChat mini-program development software download: https://mp.weixin.qq.com/?lang=en_US
 
@@ -102,13 +104,15 @@ Alternatively, access the uploaded API documentation on Alibaba Cloud OSS:
 
 2. 导入到 IDE（推荐 IntelliJ IDEA）
 
-3. 配置 `application.yml` 文件：填写端口号、数据库配置、Redis、OSS 等信息
+3. 配置 `application.yml` 文件：填写端口号、数据库配置、Redis、OSS 等信息.
 
-4. 下载，解应并启动前端项目：https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/nginx-1.20.2.zip
+4. 配置数据库。建表文件：https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/sky.sql
 
-5. 启动后端项目：运行  sky-take-out\sky-server\src\main\java\com\sky\SkyApplication.java
+5. 下载，解应并启动前端项目：https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/nginx-1.20.2.zip
 
-6. 用户端请下载微信官方的小程序开发软件并导入代码：https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/mp-weixin.zip
+6. 启动后端项目：运行  sky-take-out\sky-server\src\main\java\com\sky\SkyApplication.java
+
+7. 用户端请下载微信官方的小程序开发软件并导入代码：https://kaku-sky-take-out.oss-cn-beijing.aliyuncs.com/mp-weixin.zip
 
    微信小程序开发软件下载：https://mp.weixin.qq.com/?lang=en_US
 
